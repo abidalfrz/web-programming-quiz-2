@@ -40,6 +40,8 @@ public class HibernateUtil {
                 // Mendaftarkan Entity Class ke Hibernate
                 configuration.addAnnotatedClass(User.class);
                 configuration.addAnnotatedClass(Expense.class);
+                
+                // 2. TAMBAHKAN BARIS INI AGAR NOTIFIKASI DIKENALI
                 configuration.addAnnotatedClass(Notification.class); 
                 
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()

@@ -38,6 +38,7 @@ public class AddExpense extends HttpServlet {
             boolean check = expenseDao.saveExpense(expense);
 
             if (check) {
+                // --- BUAT NOTIFIKASI ---
                 NotificationDao notifDao = new NotificationDao(HibernateUtil.getSessionFactory());
                 Notification notif = new Notification(
                     "Expense Added", "You added '" + title + "' (" + category + ")", 
