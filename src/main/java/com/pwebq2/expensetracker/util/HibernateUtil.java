@@ -28,9 +28,9 @@ public class HibernateUtil {
                 Properties settings = new Properties();
 
                 settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
-                settings.put(Environment.URL, System.getenv("mysql://root:fGxLvksKxDDsRiXciydOxOfWfOSSumvu@mysql.railway.internal:3306/railway"));
-                settings.put(Environment.USER, System.getenv("root"));
-                settings.put(Environment.PASS, System.getenv("fGxLvksKxDDsRiXciydOxOfWfOSSumvu"));
+                settings.put(Environment.URL, System.getenv("MYSQL_URL"));
+                settings.put(Environment.USER, System.getenv("MYSQLUSER"));
+                settings.put(Environment.PASS, System.getenv("MYSQLPASSWORD"));
                 settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
                 settings.put(Environment.HBM2DDL_AUTO, "update");
                 settings.put(Environment.SHOW_SQL, true);
