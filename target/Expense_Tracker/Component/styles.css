@@ -3,15 +3,15 @@
    ========================================= */
 :root {
     /* --- LIGHT THEME (Default) --- */
-    --primary: #6366f1;          /* Indigo Modern */
+    --primary: #6366f1;          
     --primary-dark: #4f46e5;
-    --bg-body: #f8fafc;          /* Abu-abu sangat muda (Slate-50) */
+    --bg-body: #f8fafc;          
     --card-bg: #ffffff;
     
     /* Text Colors */
-    --text-main: #1e293b;        /* Slate-800 */
-    --text-secondary: #475569;   /* Slate-600 */
-    --text-muted: #94a3b8;       /* Slate-400 */
+    --text-main: #1e293b;        
+    --text-secondary: #475569;   
+    --text-muted: #94a3b8;       
     
     /* Borders & Inputs */
     --border-color: #e2e8f0;
@@ -25,19 +25,16 @@
 
 /* --- DARK THEME OVERRIDES --- */
 [data-theme="dark"] {
-    --bg-body: #0f172a;          /* Slate-900 (Deep Blue) */
-    --card-bg: #1e293b;          /* Slate-800 */
+    --bg-body: #0f172a;          
+    --card-bg: #1e293b;          
     
-    /* Text Colors */
-    --text-main: #f8fafc;        /* Slate-50 */
-    --text-secondary: #cbd5e1;   /* Slate-300 */
-    --text-muted: #94a3b8;       /* Slate-400 */
+    --text-main: #f8fafc;        
+    --text-secondary: #cbd5e1;   
+    --text-muted: #94a3b8;       
     
-    /* Borders & Inputs */
-    --border-color: #334155;     /* Slate-700 */
+    --border-color: #334155;     
     --input-bg: #0f172a;         
     
-    /* Effects */
     --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
 }
@@ -94,6 +91,21 @@ a { text-decoration: none; transition: 0.2s; }
 [data-theme="dark"] .nav-link { color: var(--text-secondary) !important; }
 [data-theme="dark"] .nav-link:hover, [data-theme="dark"] .nav-link.active { color: #818cf8 !important; }
 
+/* BRAND TEXT GRADIENT FIX */
+.text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+/* FIX: Saat Dark Mode, ubah gradient jadi lebih terang atau putih solid */
+[data-theme="dark"] .text-gradient {
+    background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 100%); /* Putih keunguan terang */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(165, 180, 252, 0.3); /* Efek glow halus */
+}
+
 /* Modern Card */
 .card-modern {
     background-color: var(--card-bg);
@@ -110,7 +122,7 @@ a { text-decoration: none; transition: 0.2s; }
 }
 
 /* =========================================
-   4. FORMS & INPUTS
+   4. FORMS & INPUTS (FIXED)
    ========================================= */
 .form-control, .form-select, textarea {
     background-color: var(--input-bg) !important;
@@ -125,7 +137,18 @@ a { text-decoration: none; transition: 0.2s; }
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
 }
 
+/* FIX: LABEL COLOR IN DARK MODE */
 .form-floating label { color: var(--text-muted); }
+[data-theme="dark"] .form-floating label { color: #94a3b8 !important; }
+
+/* FIX: PLACEHOLDER TRANSPARAN (SOLUSI YANG ANDA MINTA) */
+/* Membuat placeholder name@example.com hilang agar tidak menimpa label */
+.form-floating input::placeholder {
+    color: transparent !important;
+}
+.form-floating textarea::placeholder {
+    color: transparent !important;
+}
 
 /* Fix Calendar Icon in Dark Mode */
 [data-theme="dark"] input[type="date"], 
@@ -133,11 +156,17 @@ a { text-decoration: none; transition: 0.2s; }
     color-scheme: dark;
 }
 
+/* Login/Register Overlay Text Fix */
+.text-overlay {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
 /* =========================================
    5. TABLES (CRITICAL FIX)
    ========================================= */
 .table-custom {
-    --bs-table-bg: transparent; /* Menghapus background putih default bootstrap */
+    --bs-table-bg: transparent;
     --bs-table-accent-bg: transparent;
     color: var(--text-main);
     vertical-align: middle;
@@ -219,6 +248,17 @@ a { text-decoration: none; transition: 0.2s; }
     border-color: var(--primary);
 }
 
+/* Footer Github Link */
+.github-link {
+    color: var(--text-muted);
+    transition: 0.3s;
+    font-size: 1.5rem;
+}
+.github-link:hover {
+    color: var(--primary);
+    transform: scale(1.2);
+}
+
 /* Dropdowns */
 [data-theme="dark"] .dropdown-menu {
     background-color: var(--card-bg);
@@ -228,18 +268,21 @@ a { text-decoration: none; transition: 0.2s; }
 [data-theme="dark"] .dropdown-item:hover { background-color: rgba(255,255,255,0.1); }
 [data-theme="dark"] .dropdown-header { color: var(--text-muted); }
 
+/* Animasi Delay */
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+
 /* =========================================
    7. PRINT STYLES (Fix PDF Export)
    ========================================= */
 @media print {
-    /* 1. Reset Background & Colors */
     body, [data-theme="dark"] {
         background-color: white !important;
         color: black !important;
-        font-size: 10pt; /* Perkecil font agar muat */
+        font-size: 10pt; 
     }
 
-    /* 2. Sembunyikan Elemen Tidak Penting */
     .no-print, 
     .navbar, 
     footer, 
@@ -252,7 +295,6 @@ a { text-decoration: none; transition: 0.2s; }
         display: none !important;
     }
 
-    /* 3. Reset Layout Container agar Full Width */
     .container, .container-fluid {
         max-width: 100% !important;
         width: 100% !important;
@@ -260,16 +302,14 @@ a { text-decoration: none; transition: 0.2s; }
         margin: 0 !important;
     }
 
-    /* 4. Reset Card Style */
     .card-modern {
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
     }
 
-    /* 5. Paksa Tabel Fit ke Halaman */
     .table-responsive {
-        overflow: visible !important; /* Hilangkan scrollbar */
+        overflow: visible !important;
         display: block !important;
         width: 100% !important;
     }
@@ -279,18 +319,12 @@ a { text-decoration: none; transition: 0.2s; }
         border-collapse: collapse !important;
     }
 
-    /* Perkecil padding cell tabel */
     .table td, .table th {
         padding: 4px 8px !important; 
         font-size: 9pt !important;
-        border: 1px solid #ddd !important; /* Tambah garis agar jelas */
+        border: 1px solid #ddd !important;
     }
-
-    /* Sembunyikan kolom 'Description' jika terlalu panjang dan bikin tabel kepotong (Opsional) 
-       Hapus baris bawah ini jika ingin deskripsi tetap muncul */
-    /* .desc-truncate { max-width: none !important; white-space: normal !important; } */
     
-    /* Pastikan Chart Tercetak */
     canvas {
         max-width: 100% !important;
         max-height: 300px !important;
@@ -298,40 +332,8 @@ a { text-decoration: none; transition: 0.2s; }
         page-break-inside: avoid;
     }
     
-    /* Atur Halaman Landscape otomatis (Support Chrome/Edge) */
     @page {
         size: landscape;
         margin: 1cm;
     }
 }
-
-
-[data-theme="dark"] ::placeholder {
-    color: #cbd5e1 !important; /* Warna terang (Slate-300) */
-    opacity: 1;
-}
-[data-theme="dark"] .form-control::placeholder {
-    color: #cbd5e1 !important;
-}
-
-/* FIX: Login/Register Overlay Text (Selalu Putih) */
-.text-overlay {
-    color: #ffffff !important;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-/* Footer Github Link */
-.github-link {
-    color: var(--text-muted);
-    transition: 0.3s;
-    font-size: 1.5rem;
-}
-.github-link:hover {
-    color: var(--primary);
-    transform: scale(1.2);
-}
-
-/* Animasi Tambahan */
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }

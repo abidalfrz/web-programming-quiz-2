@@ -1,3 +1,8 @@
+<%@page import="com.pwebq2.expensetracker.dao.NotificationDao"%>
+<%@page import="com.pwebq2.expensetracker.model.Notification"%>
+<%@page import="com.pwebq2.expensetracker.model.User"%>
+<%@page import="com.pwebq2.expensetracker.util.HibernateUtil"%>
+<%@page import="java.util.List"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page isELIgnored="false"%>
 
@@ -30,17 +35,47 @@
 
                 <c:if test="${not empty loginUser}">
                     <div class="dropdown">
-                        <button class="btn btn-light rounded-circle shadow-sm position-relative" data-bs-toggle="dropdown" id="notifBtn">
+                        <button class="btn btn-light rounded-circle shadow-sm position-relative" data-bs-toggle="dropdown">
                             <i class="fa-regular fa-bell"></i>
-                            <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none"></span>
+                            <%
+                                User notifUser = (User) session.getAttribute("loginUser");
+                                NotificationDao notifDao = new NotificationDao(HibernateUtil.getSessionFactory());
+                                List<Notification> notifList = notifDao.getNotificationsByUser(notifUser);
+                                if(notifList != null && !notifList.isEmpty()) {
+                            %>
+                                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                            <% } %>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0 overflow-hidden" style="width: 320px;" id="notifList">
+                        
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0 overflow-hidden" style="width: 320px;">
                             <li class="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
                                 <h6 class="m-0 fw-bold small text-uppercase text-muted">Notifications</h6>
-                                <button class="btn btn-link btn-sm text-decoration-none p-0 small" onclick="clearNotifs()">Clear All</button>
+                                <a href="clearNotification" class="btn btn-link btn-sm text-decoration-none p-0 small">Clear All</a>
                             </li>
-                            <div id="notifContent" style="max-height: 300px; overflow-y: auto;">
-                                <li id="noNotif" class="text-center py-4 text-muted small">No notifications yet</li>
+                            
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <% if(notifList == null || notifList.isEmpty()) { %>
+                                    <li class="text-center py-4 text-muted small">No new notifications</li>
+                                <% } else {
+                                    for(Notification n : notifList) {
+                                        String iC = "fa-info-circle"; String tC = "text-primary"; String bC = "bg-primary";
+                                        if("add".equals(n.getType())) { iC="fa-circle-check"; tC="text-success"; bC="bg-success"; }
+                                        if("edit".equals(n.getType())) { iC="fa-pen-to-square"; tC="text-warning"; bC="bg-warning"; }
+                                        if("delete".equals(n.getType())) { iC="fa-trash-can"; tC="text-danger"; bC="bg-danger"; }
+                                %>
+                                    <a class="dropdown-item p-3 border-bottom d-flex gap-3 align-items-start" href="#">
+                                        <div class="<%=bC%> bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width:35px; height:35px; flex-shrink:0;">
+                                            <i class="fa-solid <%=iC%> <%=tC%>"></i>
+                                        </div>
+                                        <div class="w-100">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <span class="fw-bold text-dark small"><%= n.getTitle() %></span>
+                                            </div>
+                                            <span class="d-block small text-muted text-truncate" style="max-width: 200px;"><%= n.getMessage() %></span>
+                                            <p class="text-muted small mb-0" style="font-size: 10px;"><%= n.getCreatedAt() %></p>
+                                        </div>
+                                    </a>
+                                <%  } } %>
                             </div>
                         </ul>
                     </div>
@@ -63,7 +98,7 @@
 </nav>
 
 <script>
-    // 1. Dark Mode Logic
+    // Dark Mode Logic
     function toggleTheme() {
         const body = document.body;
         const icon = document.getElementById('themeIcon');
@@ -77,70 +112,9 @@
             if(icon) icon.classList.replace('fa-moon', 'fa-sun');
         }
     }
-    // Init Theme
     if (localStorage.getItem('theme') === 'dark') {
         document.body.setAttribute('data-theme', 'dark');
         const icon = document.getElementById('themeIcon');
         if(icon) icon.classList.replace('fa-moon', 'fa-sun');
-    }
-
-    // 2. Notification Logic
-    document.addEventListener("DOMContentLoaded", function() {
-        renderNotifications();
-    });
-
-    function renderNotifications() {
-        const content = document.getElementById('notifContent');
-        const badge = document.getElementById('notifBadge');
-        const noNotif = document.getElementById('noNotif');
-        
-        let notifications = JSON.parse(localStorage.getItem('expenseNotifs')) || [];
-        notifications.reverse(); // Terbaru diatas
-
-        if(notifications.length > 0) {
-            if(noNotif) noNotif.style.display = 'none';
-            if(badge) badge.classList.remove('d-none');
-            
-            content.innerHTML = ''; // Clear list
-
-            notifications.forEach(n => {
-                // Set Icon & Color based on Type
-                let icon = 'fa-info-circle';
-                let color = 'text-primary';
-                let bg = 'bg-primary';
-                
-                if(n.type === 'add') { icon = 'fa-circle-check'; color = 'text-success'; bg = 'bg-success'; }
-                if(n.type === 'edit') { icon = 'fa-pen-to-square'; color = 'text-warning'; bg = 'bg-warning'; }
-                if(n.type === 'delete') { icon = 'fa-trash-can'; color = 'text-danger'; bg = 'bg-danger'; }
-
-                const item = document.createElement('a');
-                item.className = 'dropdown-item p-3 border-bottom d-flex gap-3 align-items-start';
-                item.href = '#';
-                item.innerHTML = `
-                    <div class="\${bg} bg-opacity-10 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width:35px; height:35px; flex-shrink:0;">
-                        <i class="fa-solid \${icon} \${color}"></i>
-                    </div>
-                    <div class="w-100">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <span class="fw-bold text-dark small">\${n.title}</span>
-                        </div>
-                        <p class="text-muted small mb-0" style="font-size: 11px;">\${n.date}</p>
-                    </div>
-                `;
-                content.appendChild(item);
-            });
-        } else {
-            content.innerHTML = '';
-            if(noNotif) {
-                content.appendChild(noNotif);
-                noNotif.style.display = 'block';
-            }
-            if(badge) badge.classList.add('d-none');
-        }
-    }
-
-    function clearNotifs() {
-        localStorage.removeItem('expenseNotifs');
-        renderNotifications();
     }
 </script>

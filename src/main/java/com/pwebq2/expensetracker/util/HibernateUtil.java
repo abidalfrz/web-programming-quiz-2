@@ -12,76 +12,59 @@ import org.hibernate.service.ServiceRegistry;
 
 import com.pwebq2.expensetracker.model.Expense;
 import com.pwebq2.expensetracker.model.User;
+import com.pwebq2.expensetracker.model.Notification; // 1. TAMBAHKAN IMPORT INI
 
 public class HibernateUtil {
 
-	static SessionFactory sessionFactory;
-	static Session session;
+    static SessionFactory sessionFactory;
+    static Session session;
 
+    public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            try {
+                Configuration configuration = new Configuration();
 
-	public static SessionFactory getSessionFactory() {
-		if (sessionFactory == null) {
-			try {
-				Configuration configuration = new Configuration();
+                // Hibernate settings equivalent to hibernate.cfg.xml's properties
+                Properties settings = new Properties();
 
-				// Hibernate settings equivalent to hibernate.cfg.xml's properties
-				Properties settings = new Properties();
+                settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
+                settings.put(Environment.URL, "jdbc:mysql://localhost:3306/expense_tracker_db");
+                settings.put(Environment.USER, "root");
+                settings.put(Environment.PASS, "");
+                settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
+                settings.put(Environment.HBM2DDL_AUTO, "update");
+                settings.put(Environment.SHOW_SQL, true);
+                
+                configuration.setProperties(settings);
 
-				settings.put(Environment.DRIVER,"com.mysql.cj.jdbc.Driver");
-				settings.put(Environment.URL,"jdbc:mysql://localhost:3306/expense_tracker_db");
-				settings.put(Environment.USER,"root");
-				settings.put(Environment.PASS,"");
-				settings.put(Environment.DIALECT,"org.hibernate.dialect.MySQL8Dialect");
-				settings.put(Environment.HBM2DDL_AUTO,"update");
-				settings.put(Environment.SHOW_SQL,true);
+                // Mendaftarkan Entity Class ke Hibernate
+                configuration.addAnnotatedClass(User.class);
+                configuration.addAnnotatedClass(Expense.class);
+                
+                // 2. TAMBAHKAN BARIS INI AGAR NOTIFIKASI DIKENALI
+                configuration.addAnnotatedClass(Notification.class); 
+                
+                ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                        .applySettings(configuration.getProperties()).build();
 
-//				settings.put(Environment.USE_SECOND_LEVEL_CACHE,true);
-//				settings.put(Environment.CACHE_REGION_FACTORY,
-//						"org.hibernate.cache.ehche.internal.EhcacheRegionFactory");
-				
-				
-				configuration.setProperties(settings);
-				configuration.addAnnotatedClass(User.class);
-				configuration.addAnnotatedClass(Expense.class);
-				
-				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-						.applySettings(configuration.getProperties()).build();
+                sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return sessionFactory;
+    }
 
-				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return sessionFactory;
-	}
+    public static Session closeSession() {
+        if (session != null) {
+            session.close();
+        }
+        return session;
+    }
 
-//	public static Session getSession() {
-//		if (sessionFactory != null)
-//			session = sessionFactory.openSession();
-//		return session;
-//	}
-
-	public static Session closeSession() {
-		if (session != null) {
-			session.close();
-		}
-		return session;
-	}
-
-	public static void closeSessionFactory() {
-		if (sessionFactory != null) {
-			sessionFactory.close();
-		}
-	}
-
+    public static void closeSessionFactory() {
+        if (sessionFactory != null) {
+            sessionFactory.close();
+        }
+    }
 }
-
-
-//settings.setProperty("hibernate.connection.driver","com.mysql.cj.jdbc.Driver");
-//settings.setProperty("hibernate.connection.url","jdbc:mysql://localhost:3306/expense_tracker");
-//settings.setProperty("hibernate.connection.username","root");
-//settings.setProperty("hibernate.connection.password","2001");
-//settings.setProperty("hibernate.dialect","org.hibernate.dialect.MySQL8Dialect");
-//settings.setProperty("hibernate.hbm2ddl","update");
-//settings.setProperty("hibernate.show_sql","true");
-//settings.setProperty("hibernate.format_sql","true");

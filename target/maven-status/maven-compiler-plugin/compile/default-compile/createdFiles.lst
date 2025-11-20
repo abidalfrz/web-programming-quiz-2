@@ -1,11 +1,14 @@
 com\pwebq2\expensetracker\web\DeleteExpense.class
-com\pwebq2\expensetracker\dao\ExpenseDao.class
 com\pwebq2\expensetracker\web\RegisterServlet.class
 com\pwebq2\expensetracker\model\User.class
-com\pwebq2\expensetracker\dao\UserDao.class
+com\pwebq2\expensetracker\model\Notification.class
 com\pwebq2\expensetracker\web\LogoutServlet.class
 com\pwebq2\expensetracker\web\AddExpense.class
+com\pwebq2\expensetracker\dao\NotificationDao.class
+com\pwebq2\expensetracker\util\HibernateUtil.class
+com\pwebq2\expensetracker\dao\ExpenseDao.class
+com\pwebq2\expensetracker\dao\UserDao.class
+com\pwebq2\expensetracker\web\ClearNotification.class
 com\pwebq2\expensetracker\web\LoginServlet.class
 com\pwebq2\expensetracker\model\Expense.class
-com\pwebq2\expensetracker\util\HibernateUtil.class
 com\pwebq2\expensetracker\web\UpdateExpense.class
