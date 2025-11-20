@@ -28,9 +28,9 @@ public class HibernateUtil {
                 Properties settings = new Properties();
 
                 settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
-                settings.put(Environment.URL, "jdbc:mysql://localhost:3306/expense_tracker_db");
+                settings.put(Environment.URL, "mysql://root:fGxLvksKxDDsRiXciydOxOfWfOSSumvu@mysql.railway.internal:3306/railway");
                 settings.put(Environment.USER, "root");
-                settings.put(Environment.PASS, "");
+                settings.put(Environment.PASS, "fGxLvksKxDDsRiXciydOxOfWfOSSumvu");
                 settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
                 settings.put(Environment.HBM2DDL_AUTO, "update");
                 settings.put(Environment.SHOW_SQL, true);
