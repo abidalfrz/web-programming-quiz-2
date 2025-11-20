@@ -229,24 +229,81 @@ a { text-decoration: none; transition: 0.2s; }
 [data-theme="dark"] .dropdown-header { color: var(--text-muted); }
 
 /* =========================================
-   7. PRINT STYLES (Export PDF)
+   7. PRINT STYLES (Fix PDF Export)
    ========================================= */
 @media print {
+    /* 1. Reset Background & Colors */
     body, [data-theme="dark"] {
         background-color: white !important;
         color: black !important;
+        font-size: 10pt; /* Perkecil font agar muat */
     }
-    .no-print, .navbar, footer, .btn, .btn-theme-float {
+
+    /* 2. Sembunyikan Elemen Tidak Penting */
+    .no-print, 
+    .navbar, 
+    footer, 
+    .btn, 
+    .btn-theme-float,
+    #searchInput, 
+    #categoryFilter, 
+    #sortFilter,
+    .input-group {
         display: none !important;
     }
-    .card-modern {
-        border: 1px solid #000;
-        box-shadow: none;
-    }
-    /* Pastikan chart tercetak */
-    canvas { max-width: 100% !important; }
-}
 
+    /* 3. Reset Layout Container agar Full Width */
+    .container, .container-fluid {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* 4. Reset Card Style */
+    .card-modern {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    /* 5. Paksa Tabel Fit ke Halaman */
+    .table-responsive {
+        overflow: visible !important; /* Hilangkan scrollbar */
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    /* Perkecil padding cell tabel */
+    .table td, .table th {
+        padding: 4px 8px !important; 
+        font-size: 9pt !important;
+        border: 1px solid #ddd !important; /* Tambah garis agar jelas */
+    }
+
+    /* Sembunyikan kolom 'Description' jika terlalu panjang dan bikin tabel kepotong (Opsional) 
+       Hapus baris bawah ini jika ingin deskripsi tetap muncul */
+    /* .desc-truncate { max-width: none !important; white-space: normal !important; } */
+    
+    /* Pastikan Chart Tercetak */
+    canvas {
+        max-width: 100% !important;
+        max-height: 300px !important;
+        display: block;
+        page-break-inside: avoid;
+    }
+    
+    /* Atur Halaman Landscape otomatis (Support Chrome/Edge) */
+    @page {
+        size: landscape;
+        margin: 1cm;
+    }
+}
 
 
 [data-theme="dark"] ::placeholder {

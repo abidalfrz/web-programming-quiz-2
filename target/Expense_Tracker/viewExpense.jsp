@@ -19,6 +19,13 @@
             display: inline-block;
             vertical-align: middle;
         }
+        /* Badge Colors */
+        .badge-Food { background-color: #dbeafe; color: #1e40af; }
+        .badge-Transport { background-color: #fce7f3; color: #9d174d; }
+        .badge-Shopping { background-color: #fae8ff; color: #86198f; }
+        .badge-Entertainment { background-color: #ffedd5; color: #9a3412; }
+        .badge-Utilities { background-color: #e0f2fe; color: #075985; }
+        .badge-Others { background-color: #f1f5f9; color: #475569; }
     </style>
 </head>
 <body>
@@ -29,13 +36,20 @@
     <%@include file="Component/navbar.jsp"%>
 
     <div class="container pb-5 animate__animated animate__fadeIn">
+        
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
             <div>
                 <h2 class="fw-bold mb-0">My Expenses</h2>
                 <p class="text-muted mb-0">Manage your financial activity.</p>
             </div>
             <div class="d-flex gap-2 no-print">
-                <a href="addExpense.jsp" class="btn btn-gradient shadow-sm"><i class="fa-solid fa-plus me-2"></i> Add New</a>
+                <button class="btn btn-light border shadow-sm" onclick="window.print()">
+                    <i class="fa-solid fa-file-arrow-down me-2"></i> Export PDF
+                </button>
+                
+                <a href="addExpense.jsp" class="btn btn-gradient shadow-sm">
+                    <i class="fa-solid fa-plus me-2"></i> Add New
+                </a>
             </div>
         </div>
 
@@ -61,11 +75,11 @@
             <div class="col-md-5">
                 <div class="input-group shadow-sm h-100">
                     <span class="input-group-text bg-white border-end-0 ps-3"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                    <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Search by title...">
+                    <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Search by title..." onkeyup="applyFilters()">
                 </div>
             </div>
             <div class="col-md-3">
-                <select id="categoryFilter" class="form-select shadow-sm h-100" onchange="filterExpenses()">
+                <select id="categoryFilter" class="form-select shadow-sm h-100" onchange="applyFilters()">
                     <option value="all">All Categories</option>
                     <option value="Food">Food</option>
                     <option value="Transport">Transport</option>
@@ -92,6 +106,7 @@
                         <tr>
                             <th class="ps-4">Transaction</th>
                             <th>Date</th>
+                            <th>Category</th>
                             <th>Description</th>
                             <th>Amount</th>
                             <th class="text-end pe-4 no-print">Action</th>
@@ -103,35 +118,39 @@
                             ExpenseDao expenseDao = new ExpenseDao(HibernateUtil.getSessionFactory());
                             List<Expense> list = expenseDao.getAllExpenseByUser(user);
                             
-                            // Logic Trigger Notifikasi (Cek session msg)
+                            // Notifikasi Trigger
                             String msg = (String) session.getAttribute("msg");
-                            String notifType = "none";
-                            String notifMsg = "";
-                            
+                            String notifType = "none"; String notifMsg = "";
                             if(msg != null) {
-                                String lower = msg.toLowerCase();
-                                if(lower.contains("add")) { notifType = "add"; notifMsg = "Transaction added successfully"; }
-                                else if(lower.contains("updat")) { notifType = "edit"; notifMsg = "Transaction updated"; }
-                                else if(lower.contains("delet")) { notifType = "delete"; notifMsg = "Transaction removed"; }
-                                session.removeAttribute("msg"); // Hapus pesan agar tidak muncul ulang saat refresh
+                                if(msg.toLowerCase().contains("add")) { notifType = "add"; notifMsg = "Transaction added"; }
+                                else if(msg.toLowerCase().contains("updat")) { notifType = "edit"; notifMsg = "Transaction updated"; }
+                                else if(msg.toLowerCase().contains("delet")) { notifType = "delete"; notifMsg = "Transaction removed"; }
+                                session.removeAttribute("msg");
                             }
 
                             for (Expense e : list) {
+                                String cat = (e.getCategory() == null || e.getCategory().isEmpty()) ? "Others" : e.getCategory();
                         %>
                         <tr class="align-middle expense-row" 
+                            data-title="<%= e.getTitle().toLowerCase() %>"
                             data-date="<%= e.getDate() %>" 
                             data-price="<%= e.getPrice() %>"
-                            data-category="All"> <td class="ps-4">
-                                <div class="fw-bold title-cell"><%= e.getTitle() %></div>
+                            data-category="<%= cat %>">
+                            
+                            <td class="ps-4">
+                                <div class="fw-bold"><%= e.getTitle() %></div>
                             </td>
                             <td>
-                                <div class="small text-muted date-cell"><i class="fa-regular fa-calendar me-1"></i> <%= e.getDate() %></div>
+                                <div class="small text-muted"><i class="fa-regular fa-calendar me-1"></i> <%= e.getDate() %></div>
+                            </td>
+                            <td>
+                                <span class="badge badge-<%= cat %> border"><%= cat %></span>
                             </td>
                             <td>
                                 <span class="desc-truncate text-muted"><%= e.getDescription() %></span>
                                 <a href="#" class="text-primary small fw-bold ms-1 text-decoration-none"
                                    onclick="showDescModal('<%=e.getTitle()%>', '<%=e.getDescription()%>', '<%=e.getDate()%>', '<%=e.getPrice()%>')">
-                                   View More
+                                   View
                                 </a>
                             </td>
                             <td class="fw-bold text-danger">
@@ -168,7 +187,7 @@
                         <h2 class="text-danger fw-bold mb-0" id="modalPrice"></h2>
                     </div>
                     <label class="text-muted small fw-bold text-uppercase mb-1">Description</label>
-                    <p id="modalDesc" class="text-body p-2 bg-opacity-10 bg-secondary rounded"></p>
+                    <p id="modalDesc" class="text-body p-2 bg-secondary bg-opacity-10 rounded"></p>
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-gradient w-100" data-bs-dismiss="modal">Close</button>
@@ -178,12 +197,93 @@
     </div>
 
     <%@include file="Component/footer.jsp"%>
-
+    
     <input type="hidden" id="notifTriggerType" value="<%= notifType %>">
     <input type="hidden" id="notifTriggerMsg" value="<%= notifMsg %>">
 
     <script>
-        // 1. View More Logic
+        // 1. INIT & CHART
+        document.addEventListener("DOMContentLoaded", function() {
+            let total = 0;
+            const rows = document.querySelectorAll('.expense-row');
+            const dataMap = {};
+
+            rows.forEach(row => {
+                const price = parseFloat(row.getAttribute('data-price'));
+                const dateStr = row.getAttribute('data-date');
+                if(!isNaN(price)) {
+                    total += price;
+                    if(dataMap[dateStr]) dataMap[dateStr] += price;
+                    else dataMap[dateStr] = price;
+                }
+            });
+            document.getElementById('totalAmountDisplay').innerText = "Rp " + total.toLocaleString('id-ID');
+
+            const sortedDates = Object.keys(dataMap).sort((a, b) => new Date(a) - new Date(b));
+            const sortedPrices = sortedDates.map(date => dataMap[date]);
+
+            new Chart(document.getElementById('expenseChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: sortedDates,
+                    datasets: [{
+                        label: 'Daily Total',
+                        data: sortedPrices,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.3, fill: true, pointRadius: 5
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { display: false } } }
+            });
+        });
+
+        // 2. FILTER LOGIC
+        function applyFilters() {
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const catVal = document.getElementById('categoryFilter').value;
+            
+            document.querySelectorAll('.expense-row').forEach(row => {
+                const title = row.getAttribute('data-title');
+                const category = row.getAttribute('data-category');
+                const matchSearch = title.includes(searchVal);
+                const matchCat = (catVal === 'all') || (category === catVal);
+                row.style.display = (matchSearch && matchCat) ? '' : 'none';
+            });
+        }
+
+        // 3. SORTING LOGIC
+        function sortExpenses() {
+            const table = document.getElementById("tableBody");
+            const rows = Array.from(document.querySelectorAll(".expense-row"));
+            const sortType = document.getElementById("sortFilter").value;
+
+            rows.sort((a, b) => {
+                const dateA = new Date(a.getAttribute("data-date"));
+                const dateB = new Date(b.getAttribute("data-date"));
+                const priceA = parseFloat(a.getAttribute("data-price"));
+                const priceB = parseFloat(b.getAttribute("data-price"));
+
+                if (sortType === "newest") return dateB - dateA;
+                if (sortType === "oldest") return dateA - dateB;
+                if (sortType === "high") return priceB - priceA;
+                if (sortType === "low") return priceA - priceB;
+                return 0;
+            });
+            rows.forEach(row => table.appendChild(row));
+        }
+
+        // 4. Notifications
+        const type = document.getElementById('notifTriggerType').value;
+        const msg = document.getElementById('notifTriggerMsg').value;
+        if(type !== 'none' && msg !== '') {
+            let notifications = JSON.parse(localStorage.getItem('expenseNotifs')) || [];
+            const newNotif = { title: msg, type: type, date: new Date().toLocaleString('id-ID', { hour12: false }) };
+            notifications.push(newNotif);
+            localStorage.setItem('expenseNotifs', JSON.stringify(notifications));
+        }
+
+        // 5. Helpers
         function showDescModal(title, desc, date, price) {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalDesc').innerText = desc;
@@ -191,72 +291,6 @@
             document.getElementById('modalPrice').innerText = "Rp " + price;
             new bootstrap.Modal(document.getElementById('descModal')).show();
         }
-
-        // 2. Notification Logic (Trigger Save)
-        const type = document.getElementById('notifTriggerType').value;
-        const msg = document.getElementById('notifTriggerMsg').value;
-        
-        if(type !== 'none' && msg !== '') {
-            let notifications = JSON.parse(localStorage.getItem('expenseNotifs')) || [];
-            const newNotif = {
-                title: msg,
-                type: type,
-                date: new Date().toLocaleString('id-ID', { hour12: false }) // Simpan Timestamp
-            };
-            notifications.push(newNotif);
-            localStorage.setItem('expenseNotifs', JSON.stringify(notifications));
-        }
-
-        // 3. Total Spent & Chart Logic (Sort By Date)
-        document.addEventListener("DOMContentLoaded", function() {
-            let total = 0;
-            const rows = document.querySelectorAll('.expense-row');
-            const dataMap = {};
-
-            // Aggregation
-            rows.forEach(row => {
-                const price = parseFloat(row.getAttribute('data-price'));
-                const dateStr = row.getAttribute('data-date'); // Format: YYYY-MM-DD
-                if(!isNaN(price)) {
-                    total += price;
-                    if(dataMap[dateStr]) {
-                        dataMap[dateStr] += price;
-                    } else {
-                        dataMap[dateStr] = price;
-                    }
-                }
-            });
-
-            // Total Display
-            document.getElementById('totalAmountDisplay').innerText = "Rp " + total.toLocaleString('id-ID');
-
-            // Chart Sorting (Chronological)
-            const sortedDates = Object.keys(dataMap).sort((a, b) => new Date(a) - new Date(b));
-            const sortedPrices = sortedDates.map(date => dataMap[date]);
-
-            // Render Chart
-            new Chart(document.getElementById('expenseChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: sortedDates,
-                    datasets: [{
-                        label: 'Total',
-                        data: sortedPrices,
-                        borderColor: '#6366f1',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        tension: 0.3,
-                        fill: true,
-                        pointRadius: 5
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { display: false } } }
-            });
-        });
-
-        // Filter, Sort, Delete (Standard)
-        function filterExpenses() { /* ...copy logic from previous... */ }
-        function sortExpenses() { /* ...copy logic from previous... */ }
-        document.getElementById('searchInput').addEventListener('keyup', filterExpenses);
         function confirmDelete(id) {
             Swal.fire({
                 title: 'Delete?', text: "Cannot be undone!", icon: 'warning',

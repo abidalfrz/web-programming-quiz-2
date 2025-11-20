@@ -19,10 +19,12 @@ public class Expense {
 	private String date;
 	@Column
 	private String time;
-	@Column
-	private String description;
+	@Column(columnDefinition = "TEXT")
+    private String description;
 	@Column
 	private String price;
+	@Column(name = "category")
+    private String category;
 
 	@ManyToOne
 	private User user;
@@ -104,4 +106,11 @@ public class Expense {
 		
 	}
 
+	public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 }
