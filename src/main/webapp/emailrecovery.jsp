@@ -37,7 +37,6 @@
     </div>
 
     <script>
-        // Simulasi Pengiriman Email (Mockup)
         function handleRecovery(e) {
             e.preventDefault();
             const btn = e.target.querySelector('button');
@@ -58,7 +57,6 @@
             }, 2000);
         }
 
-        // Dark Mode Script (Copy dari login)
         function toggleTheme() {
             const body = document.body;
             const icon = document.getElementById('themeIconFloat');
