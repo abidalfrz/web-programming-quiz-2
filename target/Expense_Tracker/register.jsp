@@ -1,70 +1,96 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page isELIgnored="false"%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Register</title>
-<link rel="stylesheet" href="Component/styles.css">
-<%@include file="Component/links.jsp"%>
+    <title>Register</title>
+    <%@include file="Component/links.jsp"%>
+    <style>.bg-reg { background: url('Images/Banner/ex3.jpg') center/cover; }</style>
 </head>
 <body>
-	<%@include file="Component/navbar.jsp"%>
-	<div class="container pt-5">
-		<div class="row">
-			<div class="col-md-6 offset-md-3">
-				<div class="card">
-					<div class="card-header bg-grey text-center" style="background-color:#36454F;">
-						<h4 class="fw-bold pt-2" style="letter-spacing: 2px; color: #fff;">Registration</h4>
-					</div>
-					<div class="card-body">
-						<div class="msg">
-							<c:if test="${not empty msg}">
-								<p class="text-center text-success">${msg}</p>
-								<c:remove var="msg" />
-							</c:if>
-						</div>
-						<form action="userRegister" method="post">
-							<div class="mb-2">
-								<label class="form-label">FullName</label> <input type="text"
-									name="full_name" class="form-control"
-									placeholder="enter your fullname" class="box" value="">
-							</div>
-							<div class="mb-2">
-								<label for="exampleInputEmail1" class="form-label">Email
-									address</label> <input type="text" name="email"
-									placeholder="enter your email" class="form-control"
-									id="exampleInputEmail1" value="">
-							</div>
-							<div class="mb-2">
-								<label class="form-label">Phone Number</label> <input
-									type="text" name="phone_no" class="form-control"
-									placeholder="enter your PhoneNumber" value="">
-							</div>
-							<div class="mb-2">
-								<label for="exampleInputPassword1" class="form-label">Password</label>
-								<input type="password" name="password"
-									placeholder="enter your password" class="form-control"
-									id="exampleInputPassword1">
-							</div>
-							<div class="mb-2">
-								<label class="form-label">Confirm Password</label> <input
-									type="password" name="cpassword"
-									placeholder="confirm your password" class="form-control">
-							</div>
-							<button type="submit" name="register"
-								class="btn col-md-12 mt-4" style="background-color:#36454F; color:#fff;">Register</button>
-							<p class="text-center m-3">
-								already have an account? <a href="login.jsp">login now</a>!
-							</p>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+    <button class="btn-theme-float animate__animated animate__fadeInLeft" onclick="toggleTheme()">
+        <i class="fa-solid fa-moon" id="themeIconFloat"></i>
+    </button>
+
+    <div class="container-fluid">
+        <div class="row vh-100">
+            <div class="col-lg-5 d-flex align-items-center justify-content-center bg-white order-2 order-lg-1 animate__animated animate__slideInLeft">
+                <div class="w-75 py-5">
+                    <div class="mb-4">
+                        <a href="index.jsp" class="text-decoration-none text-muted small"><i class="fa-solid fa-arrow-left"></i> Back Home</a>
+                        <h2 class="fw-bold mt-3">Create Account</h2>
+                        <p class="text-muted">Join us to manage your finances better.</p>
+                    </div>
+
+                    <c:if test="${not empty msg}">
+                        <div class="alert alert-info shadow-sm">${msg}</div>
+                        <c:remove var="msg" />
+                    </c:if>
+
+                    <form action="userRegister" method="post">
+                        <div class="form-floating mb-2">
+                            <input type="text" name="full_name" class="form-control" id="fname" placeholder="Full Name" required>
+                            <label for="fname">Full Name</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                            <input type="text" name="email" class="form-control" id="email" placeholder="Email" required>
+                            <label for="email">Email Address</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                            <input type="text" name="phone_no" class="form-control" id="phone" placeholder="Phone">
+                            <label for="phone">Phone Number</label>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input type="password" name="password" class="form-control" id="pass" placeholder="Pass" required>
+                                    <label for="pass">Password</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input type="password" name="cpassword" class="form-control" id="cpass" placeholder="Confirm" required>
+                                    <label for="cpass">Confirm</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" name="register" class="btn btn-gradient w-100 mb-3 shadow-sm">Register Now</button>
+                        <p class="text-center text-muted">
+                            Already have an account? <a href="login.jsp" class="fw-bold text-primary text-decoration-none">Login</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-lg-7 d-none d-lg-block bg-reg position-relative order-1 order-lg-2 animate__animated animate__fadeIn">
+                <div class="position-absolute w-100 h-100 bg-primary opacity-25 top-0 start-0"></div>
+                <div class="position-relative h-100 d-flex flex-column justify-content-center px-5 text-white text-end">
+                    <h1 class="display-4 fw-bold text-overlay animate__animated animate__fadeInUp delay-1">Start Your Journey</h1>
+                    <p class="fs-5 text-overlay animate__animated animate__fadeInUp delay-2">Smart financial planning starts here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIconFloat');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                icon.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+        }
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeIconFloat').classList.replace('fa-moon', 'fa-sun');
+        }
+    </script>
 </body>
 </html>
