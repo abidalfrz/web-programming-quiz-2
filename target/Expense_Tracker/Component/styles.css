@@ -1,0 +1,339 @@
+/* =========================================
+   1. ROOT VARIABLES (THEMING)
+   ========================================= */
+:root {
+    /* --- LIGHT THEME (Default) --- */
+    --primary: #6366f1;          
+    --primary-dark: #4f46e5;
+    --bg-body: #f8fafc;          
+    --card-bg: #ffffff;
+    
+    /* Text Colors */
+    --text-main: #1e293b;        
+    --text-secondary: #475569;   
+    --text-muted: #94a3b8;       
+    
+    /* Borders & Inputs */
+    --border-color: #e2e8f0;
+    --input-bg: #ffffff;
+    
+    /* Effects */
+    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* --- DARK THEME OVERRIDES --- */
+[data-theme="dark"] {
+    --bg-body: #0f172a;          
+    --card-bg: #1e293b;          
+    
+    --text-main: #f8fafc;        
+    --text-secondary: #cbd5e1;   
+    --text-muted: #94a3b8;       
+    
+    --border-color: #334155;     
+    --input-bg: #0f172a;         
+    
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+}
+
+/* =========================================
+   2. GLOBAL RESET & TYPOGRAPHY
+   ========================================= */
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+main { flex: 1; }
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-main);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+a { text-decoration: none; transition: 0.2s; }
+
+/* FORCE OVERRIDES for Bootstrap Classes in Dark Mode */
+[data-theme="dark"] .text-dark { color: #f8fafc !important; }
+[data-theme="dark"] .text-muted { color: #94a3b8 !important; }
+[data-theme="dark"] .bg-white { background-color: var(--card-bg) !important; }
+[data-theme="dark"] .bg-light { background-color: #334155 !important; color: #fff !important; }
+[data-theme="dark"] .border { border-color: var(--border-color) !important; }
+
+/* =========================================
+   3. COMPONENTS: NAVBAR & CARDS
+   ========================================= */
+/* Glassmorphism Navbar */
+.navbar-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .navbar-glass {
+    background: rgba(30, 41, 59, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav-link { color: var(--text-secondary) !important; font-weight: 500; }
+.nav-link:hover, .nav-link.active { color: var(--primary) !important; }
+[data-theme="dark"] .nav-link { color: var(--text-secondary) !important; }
+[data-theme="dark"] .nav-link:hover, [data-theme="dark"] .nav-link.active { color: #818cf8 !important; }
+
+/* BRAND TEXT GRADIENT FIX */
+.text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+/* FIX: Saat Dark Mode, ubah gradient jadi lebih terang atau putih solid */
+[data-theme="dark"] .text-gradient {
+    background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 100%); /* Putih keunguan terang */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(165, 180, 252, 0.3); /* Efek glow halus */
+}
+
+/* Modern Card */
+.card-modern {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.card-modern:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* =========================================
+   4. FORMS & INPUTS (FIXED)
+   ========================================= */
+.form-control, .form-select, textarea {
+    background-color: var(--input-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+/* FIX: LABEL COLOR IN DARK MODE */
+.form-floating label { color: var(--text-muted); }
+[data-theme="dark"] .form-floating label { color: #94a3b8 !important; }
+
+/* FIX: PLACEHOLDER TRANSPARAN (SOLUSI YANG ANDA MINTA) */
+/* Membuat placeholder name@example.com hilang agar tidak menimpa label */
+.form-floating input::placeholder {
+    color: transparent !important;
+}
+.form-floating textarea::placeholder {
+    color: transparent !important;
+}
+
+/* Fix Calendar Icon in Dark Mode */
+[data-theme="dark"] input[type="date"], 
+[data-theme="dark"] input[type="time"] {
+    color-scheme: dark;
+}
+
+/* Login/Register Overlay Text Fix */
+.text-overlay {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* =========================================
+   5. TABLES (CRITICAL FIX)
+   ========================================= */
+.table-custom {
+    --bs-table-bg: transparent;
+    --bs-table-accent-bg: transparent;
+    color: var(--text-main);
+    vertical-align: middle;
+}
+
+/* Header Styling */
+.table-custom thead th {
+    background-color: var(--bg-body);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    border-bottom: 2px solid var(--border-color);
+    padding: 1rem;
+}
+
+[data-theme="dark"] .table-custom thead th {
+    background-color: #1e293b;
+    color: #cbd5e1;
+}
+
+/* Body Styling */
+.table-custom td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+/* Hover Effect */
+.table-hover tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.04) !important;
+}
+[data-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* =========================================
+   6. BUTTONS & UTILITIES
+   ========================================= */
+/* Gradient Button */
+.btn-gradient {
+    background: var(--gradient-primary);
+    border: none;
+    color: white !important;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.btn-gradient:hover {
+    opacity: 0.9;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Floating Dark Mode Button (Login/Register) */
+.btn-theme-float {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.btn-theme-float:hover {
+    transform: scale(1.1) rotate(15deg);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Footer Github Link */
+.github-link {
+    color: var(--text-muted);
+    transition: 0.3s;
+    font-size: 1.5rem;
+}
+.github-link:hover {
+    color: var(--primary);
+    transform: scale(1.2);
+}
+
+/* Dropdowns */
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+[data-theme="dark"] .dropdown-item { color: var(--text-main); }
+[data-theme="dark"] .dropdown-item:hover { background-color: rgba(255,255,255,0.1); }
+[data-theme="dark"] .dropdown-header { color: var(--text-muted); }
+
+/* Animasi Delay */
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+
+/* =========================================
+   7. PRINT STYLES (Fix PDF Export)
+   ========================================= */
+@media print {
+    body, [data-theme="dark"] {
+        background-color: white !important;
+        color: black !important;
+        font-size: 10pt; 
+    }
+
+    .no-print, 
+    .navbar, 
+    footer, 
+    .btn, 
+    .btn-theme-float,
+    #searchInput, 
+    #categoryFilter, 
+    #sortFilter,
+    .input-group {
+        display: none !important;
+    }
+
+    .container, .container-fluid {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .card-modern {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    .table-responsive {
+        overflow: visible !important;
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    .table td, .table th {
+        padding: 4px 8px !important; 
+        font-size: 9pt !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    canvas {
+        max-width: 100% !important;
+        max-height: 300px !important;
+        display: block;
+        page-break-inside: avoid;
+    }
+    
+    @page {
+        size: landscape;
+        margin: 1cm;
+    }
+}

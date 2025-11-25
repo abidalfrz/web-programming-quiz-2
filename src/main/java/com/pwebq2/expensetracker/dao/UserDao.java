@@ -23,23 +23,31 @@ public class UserDao {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void saveUser(User user) {
-		Transaction transaction = null;
-		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			// Start transaction
-			transaction = session.beginTransaction();
-			// Save the student object
-			session.save(user);
-			// Commit transaction
-			transaction.commit();
-		} catch (Exception e) {
-			// --- FIX STARTS HERE ---
+	public boolean saveUser(User user) {
+
+		try {
+			session = sessionFactory.openSession();
+
+			if (session != null)
+				transaction = session.beginTransaction();
+
 			if (transaction != null) {
-				transaction.rollback();
+				session.save(user);
+				flag = true;
 			}
-			// --- FIX ENDS HERE ---
+
+		} catch (HibernateException he) {
+			he.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (flag == true)
+				transaction.commit();
+			else
+				transaction.rollback();
+				HibernateUtil.closeSession();
 		}
+		return flag;
 	}
 	
 //	@SuppressWarnings("deprecation")
