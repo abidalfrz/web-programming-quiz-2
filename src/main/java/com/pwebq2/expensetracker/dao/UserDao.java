@@ -1,85 +1,70 @@
 package com.pwebq2.expensetracker.dao;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import com.pwebq2.expensetracker.model.User;
 import com.pwebq2.expensetracker.util.HibernateUtil;
 
-//import jakarta.persistence.Query;
-
 public class UserDao {
 
-	private Transaction transaction = null;
-	private boolean flag = false;
-	private SessionFactory sessionFactory = null;
-	private Session session = null;
+    private SessionFactory sessionFactory;
 
-	public UserDao(SessionFactory sessionFactory) {
-		this.sessionFactory = HibernateUtil.getSessionFactory();
-	}
+    public UserDao() {
+        this.sessionFactory = HibernateUtil.getSessionFactory();
+    }
 
-	@SuppressWarnings("deprecation")
-	public boolean saveUser(User user) {
+    // SAVE USER
+    public boolean saveUser(User user) {
 
-		try {
-			session = sessionFactory.openSession();
+        Transaction transaction = null;
+        boolean saved = false;
 
-			if (session != null)
-				transaction = session.beginTransaction();
+        try (Session session = sessionFactory.openSession()) {
 
-			if (transaction != null) {
-				session.save(user);
-				flag = true;
-			}
+            transaction = session.beginTransaction();
 
-		} catch (HibernateException he) {
-			he.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (flag == true)
-				transaction.commit();
-			else
-				transaction.rollback();
-				HibernateUtil.closeSession();
-		}
-		return flag;
-	}
-	
-//	@SuppressWarnings("deprecation")
-	public User login(String email,String password) {
-		User user=null;
-		try {
-			session = sessionFactory.openSession();
+            session.save(user);
+            saved = true;
 
-			if (session != null)
-				transaction = session.beginTransaction();
+            transaction.commit();
 
-			if (transaction != null) {
-				Query selectQuery=session.createQuery("from User where email=:em and password=:pw").setParameter("em",email).setParameter("pw",password);
-				user=(User)selectQuery.uniqueResult();
-				System.out.println(user);
-				if(user!=null) {
-					flag=true;
-				}
-			}
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+        }
 
-		} catch (HibernateException he) {
-			he.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (flag == true)
-				transaction.commit();
-			else
-				transaction.rollback();
-				HibernateUtil.closeSession();
-		}
-		return user;
-	}
+        return saved;
+    }
 
+    // LOGIN
+    public User login(String email, String password) {
+
+        Transaction transaction = null;
+        User user = null;
+
+        try (Session session = sessionFactory.openSession()) {
+
+            transaction = session.beginTransaction();
+
+            Query<User> q = session.createQuery(
+                "FROM User WHERE email = :em AND password = :pw",
+                User.class
+            );
+            q.setParameter("em", email);
+            q.setParameter("pw", password);
+
+            user = q.uniqueResult();
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+        }
+
+        return user;
+    }
 }
