@@ -5,78 +5,78 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+
 import com.pwebq2.expensetracker.model.User;
 import com.pwebq2.expensetracker.util.HibernateUtil;
 
 public class UserDao {
 
-    // Removed instance variables (transaction, session, flag) to ensure thread safety
+	private Transaction transaction = null;
+	private boolean flag = false;
+	private SessionFactory sessionFactory = null;
+	private Session session = null;
 
-    public UserDao(SessionFactory sessionFactory) {
-        // It is better to use the passed factory, but we will stick to your util for now
-    }
+	public UserDao(SessionFactory sessionFactory) {
+		this.sessionFactory = HibernateUtil.getSessionFactory();
+	}
 
-    public boolean saveUser(User user) {
-        Transaction transaction = null;
-        Session session = null;
-        boolean isSuccess = false;
+	@SuppressWarnings("deprecation")
+	public boolean saveUser(User user) {
 
-        try {
-            // 1. Open Session
-            session = HibernateUtil.getSessionFactory().openSession();
-            
-            // 2. Start Transaction
-            transaction = session.beginTransaction();
+		try {
+			session = sessionFactory.openSession();
 
-            // 3. Save
-            session.save(user);
+			if (session != null)
+				transaction = session.beginTransaction();
 
-            // 4. Commit
-            transaction.commit();
-            isSuccess = true;
+			if (transaction != null) {
+				session.save(user);
+				flag = true;
+			}
 
-        } catch (Exception e) {
-            // 5. Safe Rollback
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            // 6. Always close the session
-            if (session != null) {
-                session.close();
-            }
-        }
-        return isSuccess;
-    }
-    
-    public User login(String email, String password) {
-        Transaction transaction = null;
-        Session session = null;
-        User user = null;
+		} catch (HibernateException he) {
+			he.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (flag == true)
+				transaction.commit();
+			else
+				transaction.rollback();
+				HibernateUtil.closeSession();
+		}
+		return flag;
+	}
+	
+	public User login(String email,String password) {
+		User user=null;
+		try {
+			session = sessionFactory.openSession();
 
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
-            transaction = session.beginTransaction();
+			if (session != null)
+				transaction = session.beginTransaction();
 
-            Query query = session.createQuery("from User where email=:em and password=:pw");
-            query.setParameter("em", email);
-            query.setParameter("pw", password);
-            
-            user = (User) query.uniqueResult();
-            
-            transaction.commit();
+			if (transaction != null) {
+				Query selectQuery=session.createQuery("from User where email=:em and password=:pw").setParameter("em",email).setParameter("pw",password);
+				user=(User)selectQuery.uniqueResult();
+				System.out.println(user);
+				if(user!=null) {
+					flag=true;
+				}
+			}
 
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
-        return user;
-    }
+		} catch (HibernateException he) {
+			he.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (flag == true)
+				transaction.commit();
+			else
+				transaction.rollback();
+				HibernateUtil.closeSession();
+		}
+		return user;
+	}
+
 }

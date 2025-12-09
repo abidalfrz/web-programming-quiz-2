@@ -22,7 +22,6 @@ public class ClearNotification extends HttpServlet {
             dao.clearAllNotifications(user.getId());
         }
         
-        // Kembali ke halaman sebelumnya
         String referer = request.getHeader("Referer");
         response.sendRedirect(referer != null ? referer : "viewExpense.jsp");
     }

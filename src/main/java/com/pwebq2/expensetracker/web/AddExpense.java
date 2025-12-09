@@ -23,7 +23,7 @@ public class AddExpense extends HttpServlet {
         String title = req.getParameter("title");
         String date = req.getParameter("date");
         String time = req.getParameter("time");
-        String category = req.getParameter("category"); // Tangkap Kategori
+        String category = req.getParameter("category");
         String description = req.getParameter("description");
         String price = req.getParameter("price");
 
@@ -32,20 +32,18 @@ public class AddExpense extends HttpServlet {
 
         if(user != null) {
             Expense expense = new Expense(title, date, time, description, price, user);
-            expense.setCategory(category); // Set Kategori
+            expense.setCategory(category); 
 
             ExpenseDao expenseDao = new ExpenseDao(HibernateUtil.getSessionFactory());
             boolean check = expenseDao.saveExpense(expense);
 
             if (check) {
-                // --- BUAT NOTIFIKASI ---
                 NotificationDao notifDao = new NotificationDao(HibernateUtil.getSessionFactory());
                 Notification notif = new Notification(
                     "Expense Added", "You added '" + title + "' (" + category + ")", 
                     "add", new Date().toString(), user
                 );
                 notifDao.saveNotification(notif);
-                // -----------------------
 
                 session.setAttribute("msg", "Expense Added Successfully!");
                 resp.sendRedirect("addExpense.jsp");

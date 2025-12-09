@@ -41,13 +41,11 @@ public class UpdateExpense extends HttpServlet {
                 boolean check = expenseDao.updateExpense(expense);
 
                 if (check) {
-                    // --- NOTIFIKASI EDIT ---
                     NotificationDao notifDao = new NotificationDao(HibernateUtil.getSessionFactory());
                     notifDao.saveNotification(new Notification(
                         "Expense Updated", "Details for '" + title + "' updated.", 
                         "edit", new Date().toString(), user
                     ));
-                    // -----------------------
                     session.setAttribute("msg", "Expense Updated Successfully!");
                     resp.sendRedirect("viewExpense.jsp");
                 } else {

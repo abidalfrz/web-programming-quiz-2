@@ -22,9 +22,6 @@ public class HibernateUtil {
                 Configuration configuration = new Configuration();
                 Properties settings = new Properties();
 
-                // --- DYNAMIC CONFIGURATION LOGIC ---
-                
-                // 1. Check if we are on Railway (Look for Env Variables)
                 String dbUrl = System.getenv("MYSQL_URL");
                 String dbUser = System.getenv("MYSQLUSER");
                 String dbPass = System.getenv("MYSQLPASSWORD");
@@ -33,16 +30,12 @@ public class HibernateUtil {
                 String dbName = System.getenv("MYSQLDATABASE");
 
                 if (dbHost != null) {
-                    // WE ARE ON RAILWAY
-                    // Railway often provides a full URL, or individual parts. 
-                    // Constructing URL for MySQL 8:
                     String connectionUrl = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
                     
                     settings.put(Environment.URL, connectionUrl);
                     settings.put(Environment.USER, dbUser);
                     settings.put(Environment.PASS, dbPass);
                 } else {
-                    // WE ARE ON LOCALHOST (Fallback)
                     settings.put(Environment.URL, "jdbc:mysql://localhost:3306/expense_tracker_db");
                     settings.put(Environment.USER, "root");
                     settings.put(Environment.PASS, "");
@@ -70,7 +63,6 @@ public class HibernateUtil {
         return sessionFactory;
     }
 
-    // Keep your close methods same as before...
     public static Session closeSession() {
         if (session != null) { session.close(); }
         return session;
